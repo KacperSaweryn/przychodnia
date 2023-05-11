@@ -2,13 +2,15 @@
     @extends('main')
 
     <div class="container">
-        <h2>Lista użytkowników</h2>
+        <br>
+        <h1>Lista użytkowników</h1>
+        <hr>
 
         <form method="POST" action="{{ route('users.search') }}">
             @csrf
             <div class="form-group">
-                <label for="search">Szukaj:</label>
-                <input type="text" name="search" id="search" class="form-control" placeholder="Wyszukaj...">
+                <label for="search" style="margin-bottom: 10px;width: 25%">Szukaj:</label>
+                <input type="text" name="search" id="search" style="margin-bottom: 10px;width: 25%" class="form-control" placeholder="Wyszukaj...">
             </div>
 
             <button type="submit" class="btn btn-primary mb-2">Szukaj</button>
