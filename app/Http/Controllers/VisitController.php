@@ -12,7 +12,8 @@ class VisitController extends Controller
      */
     public function index()
     {
-        //
+        $visits = Visit::all();
+        return view('visits.index', compact('visits'));
     }
 
     /**
@@ -20,7 +21,7 @@ class VisitController extends Controller
      */
     public function create()
     {
-        //
+        return view('visits.create');
     }
 
     /**
@@ -28,7 +29,17 @@ class VisitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'visit_date' => 'required|date',
+            'visit_time' => 'required',
+            'doctor_id' => 'required|exists:users,id',
+            'patient_id' => 'required|exists:users,id',
+            'description' => 'required'
+        ]);
+
+        $visit = Visit::create($validatedData);
+
+        return redirect()->route('visits.show', $visit->id);
     }
 
     /**
@@ -44,7 +55,7 @@ class VisitController extends Controller
      */
     public function edit(Visit $visit)
     {
-        //
+        return view('visits.edit', compact('visit'));
     }
 
     /**
@@ -52,7 +63,17 @@ class VisitController extends Controller
      */
     public function update(Request $request, Visit $visit)
     {
-        //
+        $validatedData = $request->validate([
+            'visit_date' => 'required|date',
+            'visit_time' => 'required',
+            'doctor_id' => 'required|exists:users,id',
+            'patient_id' => 'required|exists:users,id',
+            'description' => 'required'
+        ]);
+
+        $visit->update($validatedData);
+
+        return redirect()->route('visits.show', $visit->id);
     }
 
     /**
@@ -60,6 +81,41 @@ class VisitController extends Controller
      */
     public function destroy(Visit $visit)
     {
-        //
+        $visit->delete();
+        return redirect()->route('visits.index');
     }
+
+    public function search(Request $request)
+    {
+        $query = Visit::query();
+
+        if ($request->has('date')) {
+            $query->whereDate('date', $request->date);
+        }
+
+        if ($request->has('time')) {
+            $query->whereTime('time', $request->time);
+        }
+
+        if ($request->has('doctor')) {
+            $query->whereHas('doctor', function ($subQuery) use ($request) {
+                $subQuery->where('id', $request->doctor);
+            });
+        }
+
+        if ($request->has('patient')) {
+            $query->whereHas('patient', function ($subQuery) use ($request) {
+                $subQuery->where('id', $request->patient);
+            });
+        }
+
+        if ($request->has('id')) {
+            $query->where('id', $request->id);
+        }
+
+        $visits = $query->get();
+
+        return view('visits.index', compact('visits'));
+    }
+
 }
