@@ -9,7 +9,7 @@
             <br>
         </div>
     @endif
-
+    @can('admin')
     <br>
     <div class='container'>
         <form method="POST" action="{{ route('users.store') }}">
@@ -60,5 +60,5 @@
             </table>
         </form>
     </div>
-
+    @endcan
 @endsection

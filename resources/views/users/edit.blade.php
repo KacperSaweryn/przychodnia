@@ -10,7 +10,7 @@
             </ul>
         </div>
     @endif
-
+    @can('admin')
     <div class="container mt-5">
         <h1>Edytuj użytkownika</h1>
         <hr>
@@ -59,6 +59,6 @@
             </div>
         </form>
     </div>
-
+    @endcan
 
 @endsection

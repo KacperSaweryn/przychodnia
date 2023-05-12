@@ -25,10 +25,10 @@
                 <ul class="navbar-nav" id="myTab" role="tablist">
                     <li class="nav-item menu-item" role="presentation"><a href='/visits'
                                                                           class="nav-link">Wizyty </a></li>
-                    </li>
+                    @can('admin')
                     <li class="nav-item menu-item" role="presentation"><a href='/users'
                                                                           class="nav-link">Użytkownicy </a></li>
-
+                    @endcan
                     <li class="nav-item"><a href='/logout' class="nav-link">Wyloguj się <i
                                 class="bi bi-box-arrow-right"></i></a></li>
                 </ul>

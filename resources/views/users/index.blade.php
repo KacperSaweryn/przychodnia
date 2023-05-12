@@ -1,6 +1,6 @@
 @section('content')
     @extends('main')
-
+@can('admin')
     <div class="container">
         <br>
         <h1>Lista użytkowników</h1>
@@ -50,4 +50,5 @@
             </tbody>
         </table>
     </div>
+@endcan
 @endsection
