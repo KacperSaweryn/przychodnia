@@ -12,44 +12,50 @@
     @endif
 
     <div class="container mt-5">
-        <h1>Edytuj użytkownika</h1>
+        <h1>Edytuj Wizytę</h1>
         <hr>
 
-        <form method="POST" action="{{ route('users.update', $user->id) }}">
+        <form method="POST" action="{{ route('visits.update', $visit->id) }}">
             @csrf
             @method('PUT')
             <div class="row mb-3">
-                <label for="type_id" class="col-sm-2 col-form-label"><strong>Typ</strong></label>
+                <label for="visit_date" class="col-sm-2 col-form-label"><strong>Data wizyty</strong></label>
                 <div class="col-sm-10">
-                    <select class="form-select" style="width: 25%" name="type_id">
-                        <option value="1" {{ $user->type_id == 1 ? 'selected' : '' }}>Admin</option>
-                        <option value="2" {{ $user->type_id == 2 ? 'selected' : '' }}>Lekarz</option>
-                        <option value="3" {{ $user->type_id == 3 ? 'selected' : '' }}>Pacjent</option>
+                    <label for="visit_date">Poprzednia wartość: {{ $visit->visit_date }}</label>
+                    <input type="date" value="{{ $visit->visit_date }}"  class="form-control" id="visit_date" name="visit_date" placeholder="Data wizyty" required style="margin-bottom: 10px; width: 25%">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="visit_time" class="col-sm-2 col-form-label"><strong>Godzina wizyty</strong></label>
+                <div class="col-sm-10">
+                    <label for="visit_date">Poprzednia wartość: {{ $visit->visit_time }}</label>
+                    <input type="time" value="{{ $visit->visit_time }}"  class="form-control" id="visit_time" name="visit_time" placeholder="Godzina wizyty" required style="margin-bottom: 10px; width: 25%">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="doctor_id" class="col-sm-2 col-form-label"><strong>Lekarz</strong></label>
+                <div class="col-sm-10">
+                    <select class="form-select" style="width: 25%" name="doctor_id">
+                        @foreach($doctors as $doctor)
+                            <option value="{{ $doctor->id }}" {{ $visit->doctor_id == $doctor->id ? 'selected' : '' }}>{{ $doctor->name }} {{ $doctor->surname }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="name" class="col-sm-2 col-form-label"><strong>Imię</strong></label>
+                <label for="patient_id" class="col-sm-2 col-form-label"><strong>Pacjent</strong></label>
                 <div class="col-sm-10">
-                    <input type="text" value="{{ $user->name }}"  class="form-control" id="name" name="name" placeholder="Imię" required style="margin-bottom: 10px; width: 25%">
+                    <select class="form-select" style="width: 25%" name="patient_id">
+                        @foreach($patients as $patient)
+                            <option value="{{ $patient->id }}" {{ $visit->patient_id == $patient->id ? 'selected' : '' }}>{{ $patient->name }} {{ $patient->surname }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="surname" class="col-sm-2 col-form-label"><strong>Nazwisko</strong></label>
+                <label for="description" class="col-sm-2 col-form-label"><strong>Opis</strong></label>
                 <div class="col-sm-10">
-                    <input type="text" value="{{ $user->surname }}" class="form-control" id="surname" name="surname" placeholder="Nazwisko" required style="margin-bottom: 10px;width: 25%">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="login" class="col-sm-2 col-form-label"><strong>Login</strong></label>
-                <div class="col-sm-10">
-                    <input type="text" value="{{ $user->login }}" class="form-control" id="login" name="login" placeholder="Login" required style="margin-bottom: 10px;width: 25%">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="password" class="col-sm-2 col-form-label"><strong>Hasło</strong></label>
-                <div class="col-sm-10">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Hasło" style="margin-bottom: 10px;width: 25%">
+                    <textarea class="form-control" id="description" name="description" placeholder="Opis" style="margin-bottom: 10px;width: 25%">{{ $visit->description }}</textarea>
                 </div>
             </div>
             <div class="row">
@@ -58,7 +64,5 @@
                 </div>
             </div>
         </form>
-    </div>
-
 
 @endsection

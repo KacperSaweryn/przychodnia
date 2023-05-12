@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,9 @@ class VisitController extends Controller
      */
     public function create()
     {
-        return view('visits.create');
+        $doctors = User::where('type_id', 2)->get();
+        $patients = User::where('type_id', 3)->get();
+        return view('visits.create',compact('doctors','patients'));
     }
 
     /**
@@ -33,8 +36,9 @@ class VisitController extends Controller
             'visit_date' => 'required|date',
             'visit_time' => 'required',
             'doctor_id' => 'required|exists:users,id',
-            'patient_id' => 'required|exists:users,id',
-            'description' => 'required'
+            'patient_id' => 'required|exists:users,id'
+//            ,
+//            'description' => 'required'
         ]);
 
         $visit = Visit::create($validatedData);
@@ -47,15 +51,20 @@ class VisitController extends Controller
      */
     public function show(Visit $visit)
     {
-        //
+        return view('visits.show', ['visit' => $visit]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Visit $visit)
     {
-        return view('visits.edit', compact('visit'));
+        $doctors = User::where('type_id', 2)->get();
+        $patients = User::where('type_id', 3)->get();
+        return view('visits.edit', compact('visit','doctors','patients'))
+            ->with('visit_date', $visit->visit_date)
+            ->with('visit_time', $visit->visit_time);;
     }
 
     /**
@@ -67,13 +76,12 @@ class VisitController extends Controller
             'visit_date' => 'required|date',
             'visit_time' => 'required',
             'doctor_id' => 'required|exists:users,id',
-            'patient_id' => 'required|exists:users,id',
-            'description' => 'required'
+            'patient_id' => 'required|exists:users,id'
         ]);
 
         $visit->update($validatedData);
 
-        return redirect()->route('visits.show', $visit->id);
+        return redirect()->route('visits.index', $visit->id);
     }
 
     /**
@@ -89,28 +97,22 @@ class VisitController extends Controller
     {
         $query = Visit::query();
 
-        if ($request->has('date')) {
-            $query->whereDate('date', $request->date);
-        }
+        if ($request->has('search')) {
+            $search = $request->search;
 
-        if ($request->has('time')) {
-            $query->whereTime('time', $request->time);
-        }
-
-        if ($request->has('doctor')) {
-            $query->whereHas('doctor', function ($subQuery) use ($request) {
-                $subQuery->where('id', $request->doctor);
+            $query->where(function ($q) use ($search) {
+                $q->where('visit_date', 'like', '%'.$search.'%')
+                    ->orWhere('visit_time', 'like', '%'.$search.'%')
+                    ->orWhereHas('doctor', function ($dq) use ($search) {
+                        $dq->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('surname', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('patient', function ($pq) use ($search) {
+                        $pq->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('surname', 'like', '%'.$search.'%');
+                    })
+                    ->orWhere('id', 'like', '%'.$search.'%');
             });
-        }
-
-        if ($request->has('patient')) {
-            $query->whereHas('patient', function ($subQuery) use ($request) {
-                $subQuery->where('id', $request->patient);
-            });
-        }
-
-        if ($request->has('id')) {
-            $query->where('id', $request->id);
         }
 
         $visits = $query->get();
