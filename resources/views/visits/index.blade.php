@@ -35,7 +35,25 @@
             </thead>
             <tbody>
 
-            @foreach($visits->sortByDesc('id') as $visit)
+            @php
+                $visitsData;
+                switch (Auth::user()->type_id) {
+                    case 1:
+                        $visitsData = $visits->sortByDesc('id');
+                        break;
+                    case 2:
+                        $visitsData = $visits->where('doctor_id', Auth::user()->id)->sortByDesc('id');
+                        break;
+                    case 3:
+                        $visitsData = $visits->where('patient_id', Auth::user()->id)->sortByDesc('id');
+                        break;
+                    default:
+                        $visitsData = $visits->sortByDesc('id');
+                        break;
+                }
+            @endphp
+
+            @foreach($visitsData as $visit)
                 <tr>
                     <td>{{ $visit->id }}</td>
                     <td>{{ $visit->visit_date->format('Y-m-d') }}</td>
